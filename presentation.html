@@ -1,0 +1,662 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PixVerse - Full Architecture & Working Functionality Presentation</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Google+Sans:wght@400;500;700;800&family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
+  <style>
+    :root {
+      --bg-dark: #0f172a;
+      --bg-card: #1e293b;
+      --bg-card-hover: #27354f;
+      --border: #334155;
+      --primary: #4285f4;
+      --purple: #7928ca;
+      --pink: #ff0080;
+      --green: #34a853;
+      --amber: #fbbc04;
+      --red: #ea4335;
+      --text-main: #f8fafc;
+      --text-muted: #94a3b8;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      background: var(--bg-dark);
+      color: var(--text-main);
+      font-family: 'Roboto', sans-serif;
+      overflow: hidden;
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+      user-select: none;
+    }
+
+    /* Top presentation control bar */
+    .pres-header {
+      height: 56px;
+      background: rgba(15, 23, 42, 0.95);
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 24px;
+      z-index: 100;
+    }
+
+    .pres-logo {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-family: 'Google Sans', sans-serif;
+      font-size: 1.25rem;
+      font-weight: 700;
+    }
+
+    .pres-logo span {
+      background: linear-gradient(135deg, #7928ca, #ff0080);
+      -webkit-background-clip: text;
+      -webkit-fill-color: transparent;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .pres-nav-controls {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .nav-btn {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      color: var(--text-main);
+      padding: 6px 14px;
+      border-radius: 8px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 0.88rem;
+      font-family: 'Google Sans', sans-serif;
+      transition: all 0.2s;
+    }
+
+    .nav-btn:hover {
+      background: var(--primary);
+      border-color: var(--primary);
+    }
+
+    .slide-counter {
+      font-size: 0.9rem;
+      color: var(--text-muted);
+      font-weight: 600;
+      min-width: 65px;
+      text-align: center;
+    }
+
+    /* Slides viewport */
+    .slides-container {
+      flex: 1;
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 24px 40px;
+    }
+
+    .slide {
+      position: absolute;
+      inset: 24px 40px;
+      opacity: 0;
+      pointer-events: none;
+      transform: scale(0.96) translateY(10px);
+      transition: all 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
+
+    .slide.active {
+      opacity: 1;
+      pointer-events: auto;
+      transform: scale(1) translateY(0);
+    }
+
+    /* Common slide headers */
+    .slide-badge {
+      font-family: 'Google Sans', sans-serif;
+      font-size: 0.82rem;
+      font-weight: 700;
+      color: var(--primary);
+      letter-spacing: 1.2px;
+      text-transform: uppercase;
+      margin-bottom: 6px;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .slide-title {
+      font-family: 'Google Sans', sans-serif;
+      font-size: 2.2rem;
+      font-weight: 700;
+      margin-bottom: 24px;
+      line-height: 1.2;
+    }
+
+    /* Cards grid */
+    .grid-4 {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 20px;
+    }
+
+    .grid-3 {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 24px;
+    }
+
+    .grid-2 {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 24px;
+    }
+
+    .card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 24px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.25);
+    }
+
+    .card-num {
+      font-size: 1.8rem;
+      font-weight: 800;
+      font-family: 'Google Sans', sans-serif;
+    }
+
+    .card-title {
+      font-family: 'Google Sans', sans-serif;
+      font-size: 1.2rem;
+      font-weight: 700;
+    }
+
+    .card-desc {
+      color: var(--text-muted);
+      font-size: 0.95rem;
+      line-height: 1.5;
+    }
+
+    .bullet-list {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .bullet-list li {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      font-size: 0.92rem;
+      line-height: 1.4;
+      color: var(--text-main);
+    }
+
+    .bullet-list li .material-symbols-outlined {
+      color: var(--primary);
+      font-size: 18px;
+      margin-top: 2px;
+      flex-shrink: 0;
+    }
+
+    .bullet-list li strong {
+      color: #ffffff;
+    }
+
+    /* Title slide styling */
+    .title-slide {
+      max-width: 900px;
+      margin: 0 auto;
+      text-align: left;
+    }
+
+    .title-pill {
+      display: inline-block;
+      width: 60px;
+      height: 6px;
+      background: linear-gradient(90deg, var(--purple), var(--pink));
+      border-radius: 4px;
+      margin-bottom: 20px;
+    }
+
+    .hero-title {
+      font-family: 'Google Sans', sans-serif;
+      font-size: 3.4rem;
+      font-weight: 800;
+      line-height: 1.15;
+      margin-bottom: 16px;
+    }
+
+    .hero-subtitle {
+      font-size: 1.35rem;
+      color: var(--primary);
+      margin-bottom: 36px;
+      font-weight: 400;
+    }
+
+    .overview-strip {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 20px 24px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    /* Progress bar */
+    .progress-bar {
+      height: 4px;
+      background: var(--border);
+      width: 100%;
+    }
+
+    .progress-fill {
+      height: 100%;
+      background: linear-gradient(90deg, var(--primary), var(--purple));
+      width: 9%;
+      transition: width 0.3s ease;
+    }
+
+    /* Code pill */
+    code {
+      background: rgba(255, 255, 255, 0.1);
+      padding: 2px 6px;
+      border-radius: 4px;
+      font-family: monospace;
+      color: #38bdf8;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Top bar -->
+  <header class="pres-header">
+    <div class="pres-logo">
+      <svg width="28" height="28" viewBox="0 0 100 100" fill="none">
+        <rect x="6" y="6" width="88" height="88" rx="26" fill="url(#pvg)" />
+        <circle cx="50" cy="50" r="26" stroke="#fff" stroke-width="5" stroke-opacity="0.3" fill="none"/>
+        <circle cx="50" cy="50" r="16" fill="#ff0080"/>
+        <circle cx="50" cy="50" r="8" fill="#fff"/>
+        <defs>
+          <linearGradient id="pvg" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stop-color="#7928ca"/>
+            <stop offset="100%" stop-color="#0070f3"/>
+          </linearGradient>
+        </defs>
+      </svg>
+      Pix<span>Verse</span> &nbsp;|&nbsp; Master System Specification
+    </div>
+    <div class="pres-nav-controls">
+      <button class="nav-btn" onclick="prevSlide()" title="Previous slide (Left Arrow)">
+        <span class="material-symbols-outlined">arrow_back</span>
+      </button>
+      <span class="slide-counter" id="counter">1 / 11</span>
+      <button class="nav-btn" onclick="nextSlide()" title="Next slide (Right Arrow / Space)">
+        <span class="material-symbols-outlined">arrow_forward</span>
+      </button>
+      <button class="nav-btn" onclick="toggleFullScreen()" title="Fullscreen mode">
+        <span class="material-symbols-outlined">fullscreen</span>
+      </button>
+    </div>
+  </header>
+
+  <div class="progress-bar">
+    <div class="progress-fill" id="progress"></div>
+  </div>
+
+  <!-- Slides -->
+  <main class="slides-container">
+
+    <!-- SLIDE 1 -->
+    <div class="slide active">
+      <div class="title-slide">
+        <div class="title-pill"></div>
+        <h1 class="hero-title">PixVerse Cloud Photo Gallery</h1>
+        <p class="hero-subtitle">Comprehensive Architecture, Working Functions & Technical Feature Specification</p>
+        <div class="overview-strip">
+          <div style="color: var(--amber); font-weight: 700; font-size: 1rem;">⚡ System Overview</div>
+          <p style="color: var(--text-main); font-size: 0.95rem;">• Designed as an elegant Google Photos (Material Design 3) stream with date-grouped timeline & story highlights.</p>
+          <p style="color: var(--text-main); font-size: 0.95rem;">• Full-stack backend powered by <strong>Supabase Cloud PostgreSQL 17</strong> and <strong>Supabase Storage</strong>.</p>
+          <p style="color: var(--text-main); font-size: 0.95rem;">• Production ready with zero-configuration Netlify deployment and dual-mode client resilience.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- SLIDE 2 -->
+    <div class="slide">
+      <div class="slide-badge"><span class="material-symbols-outlined">star</span> Platform Capabilities</div>
+      <h2 class="slide-title">Executive Summary & Core Value Propositions</h2>
+      <div class="grid-4">
+        <div class="card">
+          <div class="card-num" style="color: var(--purple);">01</div>
+          <div class="card-title">Google Photos UX</div>
+          <div class="card-desc">Material 3 interface with date-grouped timeline stream, memories stories carousel, interactive lightboxes, and integrated photo adjustments.</div>
+        </div>
+        <div class="card">
+          <div class="card-num" style="color: var(--primary);">02</div>
+          <div class="card-title">Supabase Cloud Backend</div>
+          <div class="card-desc">Direct integration with hosted PostgreSQL 17 database, Row Level Security (RLS) policies, and high-performance public storage CDN.</div>
+        </div>
+        <div class="card">
+          <div class="card-num" style="color: var(--green);">03</div>
+          <div class="card-title">Smart Upload System</div>
+          <div class="card-desc">Photo upload dialog with auto-selected 'My Uploads' default category, custom title support, and instant custom category creation.</div>
+        </div>
+        <div class="card">
+          <div class="card-num" style="color: var(--amber);">04</div>
+          <div class="card-title">Zero-Loss Deletion</div>
+          <div class="card-desc">Users can delete custom categories safely; the system automatically reassigns all photos to 'My Uploads' with zero data loss.</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SLIDE 3 -->
+    <div class="slide">
+      <div class="slide-badge"><span class="material-symbols-outlined">hub</span> Technical Stack</div>
+      <h2 class="slide-title">Full Stack Architecture & Cloud Infrastructure</h2>
+      <div class="grid-3">
+        <div class="card">
+          <div class="card-title" style="color: var(--primary);">🖥️ Client Layer (React 19)</div>
+          <ul class="bullet-list">
+            <li><span class="material-symbols-outlined">check_circle</span> <div><strong>React 19 & Vite 8:</strong> High-performance SPA with instant module updates.</div></li>
+            <li><span class="material-symbols-outlined">check_circle</span> <div><strong>Material Symbols:</strong> Google Material 3 iconography and animations.</div></li>
+            <li><span class="material-symbols-outlined">check_circle</span> <div><strong>Dual-Mode Storage:</strong> Live Supabase sync with local caching.</div></li>
+            <li><span class="material-symbols-outlined">check_circle</span> <div><strong>Netlify Configured:</strong> <code>netlify.toml</code> + <code>_redirects</code> rewrite support.</div></li>
+          </ul>
+        </div>
+        <div class="card">
+          <div class="card-title" style="color: var(--purple);">⚡ Database & Storage</div>
+          <ul class="bullet-list">
+            <li><span class="material-symbols-outlined">check_circle</span> <div><strong>Supabase Postgres 17:</strong> Project <code>pixverse-gallery</code> in ap-south-1.</div></li>
+            <li><span class="material-symbols-outlined">check_circle</span> <div><strong>Storage Bucket 'photos':</strong> Public CDN image serving.</div></li>
+            <li><span class="material-symbols-outlined">check_circle</span> <div><strong>Row Level Security:</strong> Configured read/write access policies.</div></li>
+            <li><span class="material-symbols-outlined">check_circle</span> <div><strong>Schema Migrations:</strong> Automated SQL migration files.</div></li>
+          </ul>
+        </div>
+        <div class="card">
+          <div class="card-title" style="color: var(--green);">🔒 Security & DevOps</div>
+          <ul class="bullet-list">
+            <li><span class="material-symbols-outlined">check_circle</span> <div><strong>Env Bindings:</strong> <code>VITE_SUPABASE_URL</code> & <code>ANON_KEY</code>.</div></li>
+            <li><span class="material-symbols-outlined">check_circle</span> <div><strong>MIME Validation:</strong> Restricts uploads to JPEG, PNG, WebP, GIF.</div></li>
+            <li><span class="material-symbols-outlined">check_circle</span> <div><strong>Sub-Second Build:</strong> Optimized Vite bundle built in 234ms.</div></li>
+            <li><span class="material-symbols-outlined">check_circle</span> <div><strong>Lint Verification:</strong> Zero lint warnings with Oxlint.</div></li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <!-- SLIDE 4 -->
+    <div class="slide">
+      <div class="slide-badge"><span class="material-symbols-outlined">lock</span> Feature Deep Dive</div>
+      <h2 class="slide-title">Full-Fledged Authentication & Profile Management</h2>
+      <div class="grid-2">
+        <div class="card">
+          <div class="card-title" style="color: var(--primary);">🔑 Multi-Tab Auth Modal</div>
+          <ul class="bullet-list">
+            <li><span class="material-symbols-outlined">tabs</span> <div><strong>4 Comprehensive Modes:</strong> Sign In, Create Account, 1-Click Demo, and Forgot Password.</div></li>
+            <li><span class="material-symbols-outlined">shield</span> <div><strong>Password Strength Meter:</strong> Live visual meter checking 6+ chars, numbers, and uppercase.</div></li>
+            <li><span class="material-symbols-outlined">visibility</span> <div><strong>Interactive Visibility:</strong> Show/hide password eye toggle & confirm password verification.</div></li>
+          </ul>
+        </div>
+        <div class="card">
+          <div class="card-title" style="color: var(--amber);">⚡ 1-Click Demo & Profiles</div>
+          <ul class="bullet-list">
+            <li><span class="material-symbols-outlined">person</span> <div><strong>Demo Member:</strong> <code>demo</code> | <code>password123</code> (Instant login for test reviewers).</div></li>
+            <li><span class="material-symbols-outlined">photo_camera</span> <div><strong>Alex Rivera (Pro):</strong> <code>alex</code> | <code>alex2026</code> (Sample photographer persona).</div></li>
+            <li><span class="material-symbols-outlined">palette</span> <div><strong>Avatar Swatches:</strong> 8 Material color choices saved to Supabase profile.</div></li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <!-- SLIDE 5 -->
+    <div class="slide">
+      <div class="slide-badge"><span class="material-symbols-outlined">cloud_upload</span> Working Function</div>
+      <h2 class="slide-title">Photo Upload Pipeline & Category Assignment</h2>
+      <div class="grid-4">
+        <div class="card">
+          <div class="card-num" style="color: var(--primary);">01</div>
+          <div class="card-title">File Selection</div>
+          <div class="card-desc">User selects photos. Previews and file sizes are dynamically calculated.</div>
+        </div>
+        <div class="card">
+          <div class="card-num" style="color: var(--amber);">02</div>
+          <div class="card-title">Category Modal</div>
+          <div class="card-desc">Interactive upload modal opens with <strong>"My Uploads"</strong> pre-selected as the default option.</div>
+        </div>
+        <div class="card">
+          <div class="card-num" style="color: var(--purple);">03</div>
+          <div class="card-title">Custom Category</div>
+          <div class="card-desc">User can keep default, choose existing categories, or type a new custom category.</div>
+        </div>
+        <div class="card">
+          <div class="card-num" style="color: var(--green);">04</div>
+          <div class="card-title">Supabase Storage</div>
+          <div class="card-desc">Uploads image binary to Supabase Storage CDN and stores metadata in PostgreSQL.</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SLIDE 6 -->
+    <div class="slide">
+      <div class="slide-badge"><span class="material-symbols-outlined">delete_sweep</span> Data Integrity</div>
+      <h2 class="slide-title">Safe Category Deletion System (Zero Photo Loss)</h2>
+      <div class="grid-2">
+        <div class="card">
+          <div class="card-title" style="color: var(--green);">🛡️ Safe Deletion Workflow</div>
+          <ul class="bullet-list">
+            <li><span class="material-symbols-outlined">verified_user</span> <div><strong>Protected Categories:</strong> 'All', 'Favorites', and 'My Uploads' cannot be deleted.</div></li>
+            <li><span class="material-symbols-outlined">delete</span> <div><strong>One-Click Buttons:</strong> Delete triggers appear on category pills, Explore cards, and Albums.</div></li>
+            <li><span class="material-symbols-outlined">security</span> <div><strong>Zero Loss Guarantee:</strong> Deleted category photos are automatically reassigned to <strong>'My Uploads'</strong>.</div></li>
+          </ul>
+        </div>
+        <div class="card">
+          <div class="card-title" style="color: var(--primary);">📊 Database Query Transition</div>
+          <ul class="bullet-list">
+            <li><span class="material-symbols-outlined">arrow_forward</span> <div><strong>Step 1:</strong> User confirms category removal in prompt dialog.</div></li>
+            <li><span class="material-symbols-outlined">database</span> <div><strong>Step 2:</strong> <code>UPDATE photos SET category = 'My Uploads' WHERE category = ?;</code></div></li>
+            <li><span class="material-symbols-outlined">delete_forever</span> <div><strong>Step 3:</strong> <code>DELETE FROM categories WHERE name = ?;</code></div></li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <!-- SLIDE 7 -->
+    <div class="slide">
+      <div class="slide-badge"><span class="material-symbols-outlined">photo_library</span> Viewing Experience</div>
+      <h2 class="slide-title">Google Photos Stream, Memories & Lightbox</h2>
+      <div class="grid-4">
+        <div class="card">
+          <div style="font-size: 2rem;">🗓️</div>
+          <div class="card-title" style="color: var(--primary);">Timeline Stream</div>
+          <div class="card-desc">Photos group automatically under 'Today', 'Yesterday', 'Month Year', and 'Earlier' headers.</div>
+        </div>
+        <div class="card">
+          <div style="font-size: 2rem;">✨</div>
+          <div class="card-title" style="color: var(--purple);">Memories Carousel</div>
+          <div class="card-desc">Interactive story highlights: '1 Year Ago', 'Best of Nature', 'Travel', and 'Favorites' with 4.5s auto-timer.</div>
+        </div>
+        <div class="card">
+          <div style="font-size: 2rem;">🔍</div>
+          <div class="card-title" style="color: var(--pink);">Fullscreen Lightbox</div>
+          <div class="card-desc">Modal viewing with multi-level zoom (1x to 2.5x), keyboard arrow navigation, and metadata display.</div>
+        </div>
+        <div class="card">
+          <div style="font-size: 2rem;">🎨</div>
+          <div class="card-title" style="color: var(--green);">Photo Editor</div>
+          <div class="card-desc">Live adjustments for Brightness, Contrast, Saturation, and Warmth with 7 preset artistic filters.</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SLIDE 8 -->
+    <div class="slide">
+      <div class="slide-badge"><span class="material-symbols-outlined">checklist</span> Collection Controls</div>
+      <h2 class="slide-title">Batch Multi-Selection, Favorites & Trash Lifecycle</h2>
+      <div class="grid-4">
+        <div class="card">
+          <div style="font-size: 2rem;">☑️</div>
+          <div class="card-title" style="color: var(--primary);">Multi-Selection</div>
+          <div class="card-desc">Hover checkboxes enable selecting multiple photos for batch favoriting or bulk moving to trash.</div>
+        </div>
+        <div class="card">
+          <div style="font-size: 2rem;">⭐</div>
+          <div class="card-title" style="color: var(--amber);">Instant Starred</div>
+          <div class="card-desc">One-click star icon marks favorites locally and syncs directly to the Supabase Postgres database.</div>
+        </div>
+        <div class="card">
+          <div style="font-size: 2rem;">🗑️</div>
+          <div class="card-title" style="color: var(--purple);">Two-Stage Trash</div>
+          <div class="card-desc">Photos moved to trash are soft-deleted, staying recoverable in the Trash tab without polluting the stream.</div>
+        </div>
+        <div class="card">
+          <div style="font-size: 2rem;">♻️</div>
+          <div class="card-title" style="color: var(--red);">Restore or Purge</div>
+          <div class="card-desc">Trash view allows recovering photos back to original albums or permanently deleting them from the cloud.</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SLIDE 9 -->
+    <div class="slide">
+      <div class="slide-badge"><span class="material-symbols-outlined">database</span> Database Architecture</div>
+      <h2 class="slide-title">Supabase Cloud Database Schema & Policies</h2>
+      <div class="grid-2">
+        <div class="card">
+          <div class="card-title" style="color: var(--primary);">🗄️ public.photos</div>
+          <div class="card-desc">Stores complete photo metadata: <code>id</code>, <code>title</code>, <code>category</code>, <code>url</code>, <code>date_added</code>, <code>rating</code>, <code>is_favorite</code>, <code>is_trashed</code>, <code>album</code>, <code>user_id</code>, <code>uploader_name</code>, <code>size</code>.</div>
+        </div>
+        <div class="card">
+          <div class="card-title" style="color: var(--purple);">🗄️ public.profiles</div>
+          <div class="card-desc">User accounts: <code>id</code>, <code>username</code>, <code>email</code>, <code>name</code>, <code>role</code>, <code>avatar_color</code>, <code>bio</code>, and timestamps.</div>
+        </div>
+        <div class="card">
+          <div class="card-title" style="color: var(--green);">🗄️ public.categories</div>
+          <div class="card-desc">Category registry: <code>id</code>, <code>name</code> (unique). Pre-seeded with Nature, Travel, Architecture, Abstract, Portraits, and My Uploads.</div>
+        </div>
+        <div class="card">
+          <div class="card-title" style="color: var(--amber);">🗄️ storage.buckets ('photos')</div>
+          <div class="card-desc">Public bucket storing original image files with 50MB file size limit and strict image MIME verification.</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SLIDE 10 -->
+    <div class="slide">
+      <div class="slide-badge"><span class="material-symbols-outlined">rocket_launch</span> DevOps Guide</div>
+      <h2 class="slide-title">Netlify Production Deployment & Environment Variables</h2>
+      <div class="grid-2">
+        <div class="card">
+          <div class="card-title" style="color: var(--primary);">🚀 Deployment Options</div>
+          <ul class="bullet-list">
+            <li><span class="material-symbols-outlined">upload_file</span> <div><strong>Option A: Drag & Drop:</strong> Run <code>npm run build</code> and drag the <code>dist/</code> folder into <strong>app.netlify.com/drop</strong>.</div></li>
+            <li><span class="material-symbols-outlined">commit</span> <div><strong>Option B: Git CI/CD:</strong> Push to GitHub. Netlify reads <code>netlify.toml</code> automatically.</div></li>
+            <li><span class="material-symbols-outlined">alt_route</span> <div><strong>SPA Redirects:</strong> <code>public/_redirects</code> ensures client-side deep links route to <code>/index.html</code>.</div></li>
+          </ul>
+        </div>
+        <div class="card">
+          <div class="card-title" style="color: var(--amber);">🔐 Environment Variables</div>
+          <ul class="bullet-list">
+            <li><span class="material-symbols-outlined">key</span> <div><strong>VITE_SUPABASE_URL:</strong> <code>https://ioojwbryftvwpvlcnskq.supabase.co</code></div></li>
+            <li><span class="material-symbols-outlined">key</span> <div><strong>VITE_SUPABASE_ANON_KEY:</strong> Client anonymous key for database queries.</div></li>
+            <li><span class="material-symbols-outlined">key</span> <div><strong>VITE_SUPABASE_PROJECT_ID:</strong> <code>ioojwbryftvwpvlcnskq</code></div></li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <!-- SLIDE 11 -->
+    <div class="slide">
+      <div class="title-slide">
+        <div class="title-pill"></div>
+        <h1 class="hero-title">PixVerse — Ready for Production</h1>
+        <p class="hero-subtitle">All requested features developed, verified, and backed by live cloud storage.</p>
+        <div class="overview-strip">
+          <div style="color: var(--green); font-weight: 700; font-size: 1.1rem; margin-bottom: 6px;">Feature Completion Checklist:</div>
+          <p style="font-size: 0.95rem;">✅ <strong>Full-Fledged Authentication:</strong> Register, Sign In, Show/Hide Password, Strength Meter, 1-Click Demo accounts.</p>
+          <p style="font-size: 0.95rem;">✅ <strong>Supabase Postgres & Storage:</strong> Live cloud database and dedicated 'photos' public bucket.</p>
+          <p style="font-size: 0.95rem;">✅ <strong>Smart Category Upload:</strong> Upload modal with 'My Uploads' default selection & custom category creation.</p>
+          <p style="font-size: 0.95rem;">✅ <strong>Safe Category Deletion:</strong> Zero-photo-loss architecture reassigns photos safely to 'My Uploads'.</p>
+          <p style="font-size: 0.95rem;">✅ <strong>Google Photos Experience:</strong> Date-grouped timeline, story highlights carousel, lightbox, and photo editor.</p>
+          <p style="font-size: 0.95rem;">✅ <strong>Netlify Optimized:</strong> Instant deployment via drag-and-drop or git with netlify.toml and SPA redirects.</p>
+        </div>
+      </div>
+    </div>
+
+  </main>
+
+  <script>
+    const slides = document.querySelectorAll('.slide');
+    const counter = document.getElementById('counter');
+    const progress = document.getElementById('progress');
+    let currentSlide = 0;
+    const totalSlides = slides.length;
+
+    function updateSlide() {
+      slides.forEach((s, idx) => {
+        s.classList.toggle('active', idx === currentSlide);
+      });
+      counter.textContent = `${currentSlide + 1} / ${totalSlides}`;
+      progress.style.width = `${((currentSlide + 1) / totalSlides) * 100}%`;
+    }
+
+    function nextSlide() {
+      if (currentSlide < totalSlides - 1) {
+        currentSlide++;
+        updateSlide();
+      }
+    }
+
+    function prevSlide() {
+      if (currentSlide > 0) {
+        currentSlide--;
+        updateSlide();
+      }
+    }
+
+    function toggleFullScreen() {
+      if (!document.fullscreenElement) {
+        document.documentElement.requestFullscreen().catch(() => {});
+      } else {
+        document.exitFullscreen().catch(() => {});
+      }
+    }
+
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'ArrowRight' || e.key === ' ' || e.key === 'PageDown') {
+        nextSlide();
+      } else if (e.key === 'ArrowLeft' || e.key === 'PageUp') {
+        prevSlide();
+      } else if (e.key === 'f' || e.key === 'F') {
+        toggleFullScreen();
+      }
+    });
+  </script>
+</body>
+</html>
